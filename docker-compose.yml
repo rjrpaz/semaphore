@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: semaphore-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_DATABASE: semaphore
+      MYSQL_USER: semaphore
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-semaphore_secure_pass}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - semaphore-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  semaphore:
+    image: semaphoreui/semaphore:latest
+    container_name: semaphore-ui
+    restart: unless-stopped
+    ports:
+      - "${SEMAPHORE_PORT:-3000}:3000"
+    environment:
+      SEMAPHORE_DB_USER: semaphore
+      SEMAPHORE_DB_PASS: ${MYSQL_PASSWORD:-semaphore_secure_pass}
+      SEMAPHORE_DB_HOST: mysql
+      SEMAPHORE_DB_PORT: 3306
+      SEMAPHORE_DB_DIALECT: mysql
+      SEMAPHORE_DB: semaphore
+      SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_ADMIN_PASSWORD:-changeme123}
+      SEMAPHORE_ADMIN_NAME: ${SEMAPHORE_ADMIN_NAME:-admin}
+      SEMAPHORE_ADMIN_EMAIL: ${SEMAPHORE_ADMIN_EMAIL:-admin@localhost}
+      SEMAPHORE_ADMIN: ${SEMAPHORE_ADMIN:-admin}
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: ${SEMAPHORE_ACCESS_KEY_ENCRYPTION:-2MLIxs80G5tyNneZ1aon6l3yjVTFf/jA/jSqlm8fdVU=}
+      SEMAPHORE_WEB_HOST: ${SEMAPHORE_WEB_HOST:-http://localhost:3000}
+    volumes:
+      - semaphore-config:/etc/semaphore
+      - semaphore-projects:/var/lib/semaphore
+      - ./requirements.txt:/etc/semaphore/requirements.txt:ro
+    networks:
+      - semaphore-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+networks:
+  semaphore-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  semaphore-config:
+  semaphore-projects:

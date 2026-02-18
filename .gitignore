@@ -1,0 +1,32 @@
+# Environment files with sensitive data
+.env
+
+# Docker volumes and data
+mysql-data/
+semaphore-data/
+semaphore-config/
+semaphore-projects/
+
+# Backup files
+*.sql
+*-backup/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+CLAUDE.md
+.claude/

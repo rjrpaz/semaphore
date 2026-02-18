@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  semaphore:
+    image: semaphoreui/semaphore:v2.16.51
+    container_name: semaphore-ui
+    ports:
+      - "3000:3000"
+    environment:
+      SEMAPHORE_DB_DIALECT: sqlite
+      SEMAPHORE_ADMIN_PASSWORD: changeme123
+      SEMAPHORE_ADMIN_NAME: admin
+      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_WEB_HOST: http://localhost:3000
+    volumes:
+      - semaphore-data:/etc/semaphore
+      - semaphore-projects:/var/lib/semaphore
+      - ./requirements.txt:/etc/semaphore/requirements.txt:ro
+    restart: unless-stopped
+
+volumes:
+  semaphore-data:
+  semaphore-projects:
