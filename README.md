@@ -77,7 +77,13 @@ docker compose logs -f mysql
 ### Stop Services
 
 ```bash
-docker compose down
+docker compose stop
+```
+
+### Remove Services and volumes
+
+```bash
+docker compose down -v
 ```
 
 ### Update to Latest Version
